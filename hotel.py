@@ -5,6 +5,7 @@ import copy
 import room as room_mod 
 import reservation as reservation_mod 
 
+
 WRITE_END = "\\n"
 HOTELS_FOLDER_PATH = "hotels"
 HOTEL_INFO_FILE_NAME = "hotel_info.txt"
@@ -78,13 +79,13 @@ class Hotel:
         hotel_file.close()
         
     @classmethod
-    def gen_csv_file_name(cls, month, year):
-        return "_".join([str(year), month])+".csv"
+    def gen_csv_file_name(cls, month_s, year):
+        return "_".join([str(year), month_s])+".csv"
         
     @classmethod
-    def gen_csv_file_path(cls, hotel_name, month, year):
+    def gen_csv_file_path(cls, hotel_name, month_s, year):
         parts = [cls.gen_hotel_folder_path(hotel_name)]
-        parts += [cls.gen_csv_file_name(month, year)]
+        parts += [cls.gen_csv_file_name(month_s, year)]
         
         return "/".join(parts)
 
@@ -147,11 +148,11 @@ class Hotel:
     # returns a dict mapped by room_number to list of tuples of format 
     # (year, month_s, day, reservation:short_format or '')
     @staticmethod
-    def load_reservation_strings_for_month(hotel_folder_name, month, year):
-        file_path = ("_".join([str(year), month]))+".csv"
-        file_path = "/".join(["hotels", hotel_folder_name, file_path])
+    def load_reservation_strings_for_month(hotel_folder_name, month_s, year):
+        csv_file_path = Hotel.get_csv_file_path_from(hotel_folder_name, Hotel.gen_csv_file_name(month_s, year))
+        
         r_dict = {}
-        csv_file = open(file_path, "r", encoding="utf-8")
+        csv_file = open(csv_file_path, "r", encoding="utf-8")
         rows = csv_file.read().split("\n")
         for row in rows:
             if len(row)==0: continue     # ''
@@ -160,7 +161,7 @@ class Hotel:
             if not room_number in r_dict:
                 r_dict[room_number] = []
             for i in range(1, len(columns)):
-                r_dict[room_number].append((year, month, i, columns[i]))
+                r_dict[room_number].append((year, month_s, i, columns[i]))
         csv_file.close()
         
         return r_dict
@@ -196,6 +197,8 @@ class Hotel:
     def get_merged_reservation_strings(dict_1, dict_2):
         tmp_dict = copy.deepcopy(dict_1)
         for key in dict_2.keys():
+            if not key in tmp_dict.keys():
+                tmp_dict[key] = []
             tmp_dict[key] += dict_2[key]
         return tmp_dict
     
@@ -237,20 +240,37 @@ class Hotel:
     
     @classmethod
     def load_hotel(cls, hotel_folder_name):
-        rooms = []
         reservations = {}
-        hotel_name, *rooms = cls.load_hotel_info_file(cls.get_hotel_info_file_path_from(hotel_folder_name))
+        hotel_name, rooms = cls.load_hotel_info_file(cls.get_hotel_info_file_path_from(hotel_folder_name))
         
+        # map a dict room_nums to rooms
+        rnr_dict = cls.get_mapped_num_to_room(rooms)
+        
+        # a dict to strore room number to reservation strings
+        rnrsvs_dict = {}
+        
+        # make a hotel folder path
         hotel_folder_path = cls.get_hotel_folder_path_from(hotel_folder_name)
         
         #ymts dict mapped to csv file name
-        ymts_dict = cls.get_ymts_dict_from_ldir(os.listdir(hotel_folder_path)
+        ymts_dict = cls.get_ymts_dict_from_ldir(os.listdir(hotel_folder_path))
         
         # create rooms
-        for ymt in ymts_dict.kesy():
-            
+        for ymt in ymts_dict.keys():
+            month_s = room_mod.get_month_str(ymt[1])
+            # ~ print("for ymt: ", ymt)
+            tmp_rnrsvs_dict = cls.load_reservation_strings_for_month(hotel_folder_name, month_s, ymt[0])
+            for room_num in tmp_rnrsvs_dict.keys():
+                rnr_dict[room_num].set_up_room_availability([month_s], ymt[0])
+            rnrsvs_dict = cls.get_merged_reservation_strings(rnrsvs_dict, tmp_rnrsvs_dict)
         
+        for room_num in rnrsvs_dict.keys():
+            tmp_rsvs = reservation_mod.Reservation.get_reservations_from_row(rnr_dict[room_num], rnrsvs_dict[room_num])
+            for key in tmp_rsvs.keys():
+                reservations[key] = tmp_rsvs[key]
         
+        return cls(hotel_name, rooms, reservations)
+
     
 if __name__=='__main__':
     import doctest 
@@ -261,3 +281,11 @@ if __name__=='__main__':
     # ~ rsvs = h.load_reservation_strings_for_month('overlook_hotel', 'Oct', 1975)
     # ~ print(rsvs[237])
     
+    # ~ from reservation import Reservation
+    
+    # ~ random.seed(137)
+    # ~ Reservation.booking_numbers = []
+    # ~ hotel = Hotel.load_hotel('overlook_hotel')
+    # ~ print(hotel.name)
+    # ~ print(str(hotel.rooms[236]))
+    # ~ print(hotel.reservations[9998701091820])

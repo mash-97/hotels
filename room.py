@@ -10,6 +10,10 @@ def get_month_no(month_s):
       return i+1
   return None
 
+# get month str from month not
+def get_month_str(month_no):
+  return MONTHS[month_no-1]
+
 # check if the year is a leap year
 def is_leap(year):
   is_leap_year = False

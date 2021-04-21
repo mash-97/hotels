@@ -153,3 +153,18 @@ True
 '237,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1953400675629--Jack,1953400675629--Jack\\n'
 >>> fobj.close()
 
+
+"Hotel->load_hotel"
+>>> random.seed(137)
+>>> Reservation.booking_numbers = []
+>>> hotel = Hotel.load_hotel('overlook_hotel')
+>>> hotel.name
+'Overlook Hotel'
+>>> str(hotel.rooms[236])
+'Room 237,Twin,99.99'
+>>> print(hotel.reservations[9998701091820])
+Booking number: 9998701091820
+Name: Jack
+Room reserved: Room 237,Twin,99.99
+Check-in date: 1975-10-30
+Check-out date: 1975-12-24

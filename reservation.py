@@ -3,6 +3,7 @@ import random
 
 import room as room_mod
 
+
 class Reservation:
   booking_numbers = []
   
@@ -63,9 +64,10 @@ class Reservation:
 
     for tupl in tuples:
       t_year, t_month, t_day, short_string = tupl 
-      if short_string==None or len(short_string)==0: next 
+      if short_string==None or len(short_string)==0: continue
       
       t_month = room_mod.get_month_no(t_month)
+      
       bn,name = short_string.split("--")
       bn = int(bn)
       
