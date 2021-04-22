@@ -188,14 +188,14 @@ class Hotel:
     
     @staticmethod
     def get_merged_dict(dict_1, dict_2):
-        tmp_dict = copy.deepcopy(dict_1)
+        tmp_dict = dict_1
         for key in dict_2.keys():
             tmp_dict[key] = dict_2[key]
         return tmp_dict 
     
     @staticmethod
     def get_merged_reservation_strings(dict_1, dict_2):
-        tmp_dict = copy.deepcopy(dict_1)
+        tmp_dict = dict_1
         for key in dict_2.keys():
             if not key in tmp_dict.keys():
                 tmp_dict[key] = []
@@ -258,12 +258,14 @@ class Hotel:
         # create rooms
         for ymt in ymts_dict.keys():
             month_s = room_mod.get_month_str(ymt[1])
-            # ~ print("for ymt: ", ymt)
+            
             tmp_rnrsvs_dict = cls.load_reservation_strings_for_month(hotel_folder_name, month_s, ymt[0])
+            
             for room_num in tmp_rnrsvs_dict.keys():
                 rnr_dict[room_num].set_up_room_availability([month_s], ymt[0])
+            
             rnrsvs_dict = cls.get_merged_reservation_strings(rnrsvs_dict, tmp_rnrsvs_dict)
-        
+            
         for room_num in rnrsvs_dict.keys():
             tmp_rsvs = reservation_mod.Reservation.get_reservations_from_row(rnr_dict[room_num], rnrsvs_dict[room_num])
             for key in tmp_rsvs.keys():
@@ -273,19 +275,32 @@ class Hotel:
 
     
 if __name__=='__main__':
-    import doctest 
-    doctest.testfile("hotel_doctest.tst", verbose=True)
-    
-    # ~ name, rooms = Hotel.load_hotel_info_file('hotels/overlook_hotel/hotel_info.txt')
-    # ~ h = Hotel(name, rooms, {})
-    # ~ rsvs = h.load_reservation_strings_for_month('overlook_hotel', 'Oct', 1975)
-    # ~ print(rsvs[237])
-    
-    # ~ from reservation import Reservation
-    
-    # ~ random.seed(137)
-    # ~ Reservation.booking_numbers = []
-    # ~ hotel = Hotel.load_hotel('queen_elizabeth_hotel')
-    # ~ print(hotel.name)
-    # ~ print(hotel.rooms)
-    # ~ print(hotel.reservations)
+    dt = 0
+    if dt:
+        import doctest 
+        doctest.testfile("hotel_doctest.tst", verbose=True)
+    else:
+        # ~ name, rooms = Hotel.load_hotel_info_file('hotels/overlook_hotel/hotel_info.txt')
+        # ~ h = Hotel(name, rooms, {})
+        # ~ rsvs = h.load_reservation_strings_for_month('overlook_hotel', 'Oct', 1975)
+        # ~ print(rsvs[237])
+        import time
+        from reservation import Reservation
+        
+        random.seed(137)
+        tt = 0.0
+        attempts = 100
+        for i in range(attempts):
+            Reservation.booking_numbers = []
+            s = time.time()
+            hotel = Hotel.load_hotel('the_great_northern_hotel')
+            e = time.time()
+            print("=====> Loaded time: ", (e-s))
+            print(hotel.name)
+            print("\n\n")
+            tt += (e-s)
+        
+        print("==========> Total time took: ", tt)
+        print("==========> Average time: ", tt/attempts)
+        
+
