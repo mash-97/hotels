@@ -6,7 +6,7 @@ import room as room_mod
 import reservation as reservation_mod 
 
 
-WRITE_END = "\\n"
+WRITE_END = "\n"
 HOTELS_FOLDER_PATH = "hotels"
 HOTEL_INFO_FILE_NAME = "hotel_info.txt"
 
@@ -285,7 +285,7 @@ if __name__=='__main__':
     
     # ~ random.seed(137)
     # ~ Reservation.booking_numbers = []
-    # ~ hotel = Hotel.load_hotel('overlook_hotel')
+    # ~ hotel = Hotel.load_hotel('queen_elizabeth_hotel')
     # ~ print(hotel.name)
-    # ~ print(str(hotel.rooms[236]))
-    # ~ print(hotel.reservations[9998701091820])
+    # ~ print(hotel.rooms)
+    # ~ print(hotel.reservations)

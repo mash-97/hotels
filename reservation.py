@@ -24,12 +24,10 @@ class Reservation:
     # generate a new 13 digits booking number if not provided
     if self.booking_number == None:
       self.booking_number = type(self).new_booking_number()
-    
-    if self.booking_number in type(self).booking_numbers:
-      raise AssertionError("Booking number collision!")
-    
+      type(self).booking_numbers.append(self.booking_number)
+
     # update booking number into the class attribute
-    type(self).booking_numbers.append(self.booking_number)
+    
     
     # reserve specified room for all nights from the check_in_date(included) to the 
     # check_out_night(excluded)

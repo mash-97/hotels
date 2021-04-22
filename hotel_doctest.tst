@@ -105,7 +105,7 @@ True
 >>> h.save_hotel_info_file()
 >>> fobj = open('hotels/queen_elizabeth_hotel/hotel_info.txt', 'r')
 >>> fobj.read()
-'Queen Elizabeth Hotel\\nRoom 101,Double,99.99\\n'
+'Queen Elizabeth Hotel\nRoom 101,Double,99.99\n'
 >>> fobj.close()
 
 
@@ -129,7 +129,7 @@ True
 >>> h.save_reservations_for_month('Oct', 2021)
 >>> fobj = open('hotels/queen_elizabeth_hotel/2021_Oct.csv', 'r')
 >>> fobj.read()
-'237,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1953400675629--Jack,1953400675629--Jack\\n'
+'237,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1953400675629--Jack,1953400675629--Jack\n'
 >>> fobj.close()
 
 
@@ -146,11 +146,11 @@ True
 >>> h.save_hotel()
 >>> fobj = open('hotels/queen_elizabeth_hotel/hotel_info.txt', 'r')
 >>> fobj.read()
-'Queen Elizabeth Hotel\\nRoom 237,Double,99.99\\n'
+'Queen Elizabeth Hotel\nRoom 237,Double,99.99\n'
 >>> fobj.close()
 >>> fobj = open('hotels/queen_elizabeth_hotel/2021_Oct.csv', 'r')
 >>> fobj.read()
-'237,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1953400675629--Jack,1953400675629--Jack\\n'
+'237,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1953400675629--Jack,1953400675629--Jack\n'
 >>> fobj.close()
 
 
