@@ -155,13 +155,14 @@ class Hotel:
         csv_file = open(csv_file_path, "r", encoding="utf-8")
         rows = csv_file.read().split("\n")
         for row in rows:
-            if len(row)==0: continue     # ''
+            if len(row)==0: continue     # '' or '' at the EOF
             columns = row.split(",")
             room_number = int(columns[0])
             if not room_number in r_dict:
                 r_dict[room_number] = []
             for i in range(1, len(columns)):
-                r_dict[room_number].append((year, month_s, i, columns[i]))
+                if len(columns[i])!=0:   # => time lesser
+                    r_dict[room_number].append((year, month_s, i, columns[i]))
         csv_file.close()
         
         return r_dict

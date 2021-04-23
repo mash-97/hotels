@@ -26,6 +26,7 @@ class Reservation:
       self.booking_number = type(self).new_booking_number()
       type(self).booking_numbers.append(self.booking_number)
 
+
     # update booking number into the class attribute
     
     
