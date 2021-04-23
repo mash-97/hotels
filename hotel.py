@@ -11,11 +11,17 @@ HOTELS_FOLDER_PATH = "hotels"
 HOTEL_INFO_FILE_NAME = "hotel_info.txt"
 
 class Hotel:
+
+    # name:str (defines hotel name)
+    # rooms:list (defines Room objects)
+    # reservations:dict (booking number -> reservation)
     def __init__(self, name, rooms=[], reservations={}):
         self.name = name 
         self.rooms = copy.deepcopy(rooms)
         self.reservations = copy.deepcopy(reservations) # booking number => reservation
     
+    # makes reservation for the given person_name(str), room_type(str)
+    # check_in(date), check_out(date)
     def make_reservation(self, person_name, room_type, check_in, check_out):
         for room in self.rooms:
             if room.room_type==room_type and room.is_available(check_in, check_out):
@@ -24,6 +30,8 @@ class Hotel:
                 return reservation.booking_number 
         raise AssertionError("Room not found with the given type, check-in and check-out date!")
     
+    # get recieption after booking a reservatio
+    # booking_numbers(list of booking numbers)
     def get_receipt(self, booking_numbers):
         total_price = 0.0
         for bn in booking_numbers:
@@ -34,6 +42,8 @@ class Hotel:
     def get_reservation_for_booking_number(self, booking_number):
         return self.reservations.get(booking_number, None)
     
+    # cancels reservation for the booking number
+    # doesn't return anything particular
     def cancel_reservation(self, booking_number):
         reservation = self.get_reservation_for_booking_number(booking_number)
         if reservation:
@@ -47,29 +57,7 @@ class Hotel:
                 room_types.append(room.room_type)
         return room_types
     
-    @classmethod
-    def gen_hotel_folder_name(cls, hotel_name):
-        return "_".join(hotel_name.lower().split(" "))
-    
-    def get_hotel_folder_path(self):
-        return type(self).gen_hotel_folder_name(self.name)
-    
-    @classmethod
-    def gen_hotel_folder_path(cls, hotel_name):
-        parts = [HOTELS_FOLDER_PATH, cls.gen_hotel_folder_name(hotel_name)]
-        return "/".join(parts)
-    
-    def get_hotel_folder_path(self):
-        return type(self).gen_hotel_folder_path(self.name)
-    
-    @classmethod
-    def gen_hotel_info_file_path(cls, hotel_name):
-        parts = [cls.gen_hotel_folder_path(hotel_name), HOTEL_INFO_FILE_NAME]
-        return "/".join(parts)
-    
-    def get_hotel_info_file_path(self):
-        return type(self).gen_hotel_info_file_path(self.name)
-    
+
     def save_hotel_info_file(self):
         hotel_info_file_path = self.get_hotel_info_file_path()
         hotel_file = open(hotel_info_file_path, "w+", encoding="utf-8")
@@ -77,31 +65,8 @@ class Hotel:
         for room in self.rooms:
             hotel_file.write(str(room)+WRITE_END)
         hotel_file.close()
-        
-    @classmethod
-    def gen_csv_file_name(cls, month_s, year):
-        return "_".join([str(year), month_s])+".csv"
-        
-    @classmethod
-    def gen_csv_file_path(cls, hotel_name, month_s, year):
-        parts = [cls.gen_hotel_folder_path(hotel_name)]
-        parts += [cls.gen_csv_file_name(month_s, year)]
-        
-        return "/".join(parts)
+    
 
-    def get_csv_file_path(self, month, year):
-       return type(self).gen_csv_file_path(self.name, month, year)
-    
-    
-    def get_reservations_for_room(self, room):
-        reservations = []
-        for bn in self.reservations:
-            reservation = self.reservations[bn]
-            if room == reservation.room_reserved:
-                reservations.append(reservation)
-        return reservations
-    
-    
     # save csv file for the (month, year)
     # hard try
     def save_reservations_for_month(self, month, year):
@@ -144,7 +109,7 @@ class Hotel:
         for ymt in year_month_tuples.keys():
             self.save_reservations_for_month(room_mod.MONTHS[ymt[1]-1], ymt[0])
         
-                    
+            
     # returns a dict mapped by room_number to list of tuples of format 
     # (year, month_s, day, reservation:short_format or '')
     @staticmethod
@@ -161,7 +126,7 @@ class Hotel:
             if not room_number in r_dict:
                 r_dict[room_number] = []
             for i in range(1, len(columns)):
-                if len(columns[i])!=0:   # => time lesser
+                if len(columns[i])!=0:   # => time lesser / ignore '' for reservations short
                     r_dict[room_number].append((year, month_s, i, columns[i]))
         csv_file.close()
         
@@ -187,57 +152,6 @@ class Hotel:
         
         return (hotel_name, r_rooms)
     
-    @staticmethod
-    def get_merged_dict(dict_1, dict_2):
-        tmp_dict = dict_1
-        for key in dict_2.keys():
-            tmp_dict[key] = dict_2[key]
-        return tmp_dict 
-    
-    @staticmethod
-    def get_merged_reservation_strings(dict_1, dict_2):
-        tmp_dict = dict_1
-        for key in dict_2.keys():
-            if not key in tmp_dict.keys():
-                tmp_dict[key] = []
-            tmp_dict[key] += dict_2[key]
-        return tmp_dict
-    
-    @staticmethod
-    def get_mapped_num_to_room(rooms):
-        tmp_dict = {}
-        for room in rooms:
-            tmp_dict[room.room_num] = room
-        return tmp_dict
-    
-    @staticmethod
-    def get_hotel_info_file_path_from(hotel_folder_name):
-        parts = [HOTELS_FOLDER_PATH, hotel_folder_name, HOTEL_INFO_FILE_NAME]
-        return "/".join(parts)
-    
-    @staticmethod
-    def get_hotel_folder_path_from(hotel_folder_name):
-        parts = [HOTELS_FOLDER_PATH, hotel_folder_name]
-        return "/".join(parts)
-    
-    @staticmethod
-    def get_ymts_dict_from_ldir(ls):
-        ymt = {}
-        for l in ls:
-            ym, ext = l.split(".")
-            try:
-                if ext=="csv":
-                    y,m = ym.split("_")
-                    y = int(y)
-                    m = room_mod.get_month_no(m)
-                    ymt[(y,m)] = l
-            except: 
-                continue
-        return ymt
-    
-    @staticmethod
-    def get_csv_file_path_from(hotel_folder_name, csv_file_name):
-        return "/".join([HOTELS_FOLDER_PATH, hotel_folder_name, csv_file_name])
     
     @classmethod
     def load_hotel(cls, hotel_folder_name):
@@ -274,7 +188,125 @@ class Hotel:
         
         return cls(hotel_name, rooms, reservations)
 
+
+    """ purpose made """
+    def get_hotel_info_file_path(self):
+        return type(self).gen_hotel_info_file_path(self.name)
     
+    
+    """ purpose made """
+    def get_csv_file_path(self, month, year):
+       return type(self).gen_csv_file_path(self.name, month, year)
+    
+    """ purpose made """
+    def get_reservations_for_room(self, room):
+        reservations = []
+        for bn in self.reservations:
+            reservation = self.reservations[bn]
+            if room == reservation.room_reserved:
+                reservations.append(reservation)
+        return reservations
+    
+    """ purpose made """
+    def get_hotel_folder_path(self):
+        return type(self).gen_hotel_folder_name(self.name)
+
+    """ purpose made """
+    def get_hotel_folder_path(self):
+        return type(self).gen_hotel_folder_path(self.name)
+                 
+    """ purpose made """
+    @classmethod
+    def gen_csv_file_name(cls, month_s, year):
+        return "_".join([str(year), month_s])+".csv"
+     
+    """ purpose made """   
+    @classmethod
+    def gen_csv_file_path(cls, hotel_name, month_s, year):
+        parts = [cls.gen_hotel_folder_path(hotel_name)]
+        parts += [cls.gen_csv_file_name(month_s, year)]
+        
+        return "/".join(parts)
+   
+    """ purpose made """
+    @staticmethod
+    def get_merged_dict(dict_1, dict_2):
+        tmp_dict = dict_1
+        for key in dict_2.keys():
+            tmp_dict[key] = dict_2[key]
+        return tmp_dict 
+    
+    """ purpose made """
+    @staticmethod
+    def get_merged_reservation_strings(dict_1, dict_2):
+        tmp_dict = dict_1
+        for key in dict_2.keys():
+            if not key in tmp_dict.keys():
+                tmp_dict[key] = []
+            tmp_dict[key] += dict_2[key]
+        return tmp_dict
+    
+    """ purpose made """
+    @staticmethod
+    def get_mapped_num_to_room(rooms):
+        tmp_dict = {}
+        for room in rooms:
+            tmp_dict[room.room_num] = room
+        return tmp_dict
+    
+    """ purpose made """
+    @staticmethod
+    def get_hotel_info_file_path_from(hotel_folder_name):
+        parts = [HOTELS_FOLDER_PATH, hotel_folder_name, HOTEL_INFO_FILE_NAME]
+        return "/".join(parts)
+    
+    """ purpose made """
+    @staticmethod
+    def get_hotel_folder_path_from(hotel_folder_name):
+        parts = [HOTELS_FOLDER_PATH, hotel_folder_name]
+        return "/".join(parts)
+    
+    """ purpose made """
+    @staticmethod
+    def get_ymts_dict_from_ldir(ls):
+        ymt = {}
+        for l in ls:
+            ym, ext = l.split(".")
+            try:
+                if ext=="csv":
+                    y,m = ym.split("_")
+                    y = int(y)
+                    m = room_mod.get_month_no(m)
+                    ymt[(y,m)] = l
+            except: 
+                continue
+        return ymt
+    
+    """ purpose made """
+    @staticmethod
+    def get_csv_file_path_from(hotel_folder_name, csv_file_name):
+        return "/".join([HOTELS_FOLDER_PATH, hotel_folder_name, csv_file_name])
+    """ purpose made """
+    @classmethod
+    def gen_hotel_folder_name(cls, hotel_name):
+        return "_".join(hotel_name.lower().split(" "))
+    
+
+    """ purpose made """
+    @classmethod
+    def gen_hotel_folder_path(cls, hotel_name):
+        parts = [HOTELS_FOLDER_PATH, cls.gen_hotel_folder_name(hotel_name)]
+        return "/".join(parts)
+    
+
+    """ purpose made """
+    @classmethod
+    def gen_hotel_info_file_path(cls, hotel_name):
+        parts = [cls.gen_hotel_folder_path(hotel_name), HOTEL_INFO_FILE_NAME]
+        return "/".join(parts)
+    
+
+
 if __name__=='__main__':
     dt = 0
     if dt:

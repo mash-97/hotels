@@ -42,8 +42,10 @@ class Room:
   # class attributes
   TYPES_OF_ROOMS_AVAILABLE = ['twin', 'double', 'queen', 'king']
   
-  # initialization
-  def __init__(self,room_type, room_num, price):
+  # room_type (str)
+  # room_num  (int)
+  # price (float/int)
+  def __init__(self, room_type, room_num, price):
     
     # check if all the arguments are in correct type
     if type(room_type)!=str or type(room_num)!=int or type(price)!=float or room_num<1 or price < 0:
@@ -57,7 +59,8 @@ class Room:
   def __str__(self):
     return "Room {0},{1},{2}".format(self.room_num, self.room_type, self.price)
 
-  
+  # months_l (list of str defining months)
+  # year (int)
   def set_up_room_availability(self, months_l, year):
     for month_s in months_l:
       month = get_month_no(month_s)
@@ -76,41 +79,49 @@ class Room:
     self.availability[(date.year, date.month)][date.day] = True
   
   
-  def is_available(self, check_in_date, check_out_date):
-    if check_in_date >= check_out_date:
+  # checks if the room is available for the given dates
+  # check_in (date)
+  # check_out (date)
+  def is_available(self, check_in, check_out):
+    if check_in >= check_out:
       raise AssertionError("Check in date is earlier to the check out date!")
     
-    diff_td = check_out_date - check_in_date
+    diff_td = check_out - check_in
     
     for td in range(0, diff_td.days):
-      tmp_date = check_in_date + datetime.timedelta(td)
+      tmp_date = check_in + datetime.timedelta(td)
       available = self.availability[(tmp_date.year, tmp_date.month)][tmp_date.day]
       if not available: return False
     return True
 
-  """ Method not stated """
-  def reserve_room_for(self, check_in_date, check_out_date):
-    diff_td = check_out_date - check_in_date
+  """ purpose made """
+  # check_in (date), check_out (date)
+  def reserve_room_for(self, check_in, check_out):
+    diff_td = check_out - check_in
     
     for td in range(0, diff_td.days):
-      tmp_date = check_in_date + datetime.timedelta(td)
+      tmp_date = check_in + datetime.timedelta(td)
       self.reserve_room(tmp_date)
   
-  """ Method not stated """
-  def make_available_for(self, check_in_date, check_out_date):
-    diff_td = check_out_date - check_in_date
+  """ purpose made """
+  # check_in (date), check_out (date)
+  def make_available_for(self, check_in, check_out):
+    diff_td = check_out - check_in
     
     for td in range(0, diff_td.days):
-      tmp_date = check_in_date + datetime.timedelta(td)
+      tmp_date = check_in + datetime.timedelta(td)
       self.make_available(tmp_date)
   
   @staticmethod
-  def find_available_room(rooms, room_type, check_in_date, check_out_date):
-    if check_in_date >= check_out_date:
+  # rooms (Room objects)
+  # room_type (str)
+  # check_in (date), check_out (date)
+  def find_available_room(rooms, room_type, check_in, check_out):
+    if check_in >= check_out:
       raise AssertionError("Check in date is earlier to the check out date!")
     
     for room in rooms:
-      if room.room_type == room_type and room.is_available(check_in_date, check_out_date):
+      if room.room_type == room_type and room.is_available(check_in, check_out):
         return room
     return None
   

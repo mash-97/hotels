@@ -7,8 +7,13 @@ import room as room_mod
 class Reservation:
   booking_numbers = []
   
-  def __init__(self, name, room_reserved, check_in_date, check_out_date, booking_number=None):
-    if not room_reserved.is_available(check_in_date, check_out_date):
+  # Initialize a reservation
+  # name:str -> name of the person room reserved for
+  # room_reserved:Room -> room that is reserved
+  # check_in:date, check_out:date
+  # booking_number:int
+  def __init__(self, name, room_reserved, check_in, check_out, booking_number=None):
+    if not room_reserved.is_available(check_in, check_out):
       raise AssertionError("Room not available at the specified dates!")
     if booking_number != None and booking_number in type(self).booking_numbers:
       raise AssertionError("Provided booking number is already in use!")
@@ -17,8 +22,8 @@ class Reservation:
     
     self.name = name 
     self.room_reserved = room_reserved 
-    self.check_in = check_in_date 
-    self.check_out = check_out_date 
+    self.check_in = check_in
+    self.check_out = check_out
     self.booking_number = booking_number 
     
     # generate a new 13 digits booking number if not provided
@@ -58,6 +63,9 @@ class Reservation:
   # returns a dict mapping booking_number to the associated reservation
   # tuples in the input supposed to be come from Hotel.load_reservation_strings_for_month
   @staticmethod
+  # room (Room::obj)
+  # tuples (list of tuples defining tuple(year:int, month:str, short_string:str)
+  # short_string that comes from Reservation::obj->to_short_string
   def get_reservations_from_row(room, tuples):
     rvs_dict = {}
 
@@ -92,6 +100,8 @@ class Reservation:
     return rvs_dict
 				  
   @classmethod
+  # short_string:str
+  # check_int:date, check_out:date
   def from_short_string(cls, short_string, check_in, check_out, room):
     booking_number_str, name = short_string.split("--")
     return Reservation(name, room, check_in, check_out, int(booking_number_str))
