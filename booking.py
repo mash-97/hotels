@@ -271,19 +271,67 @@ class Booking:
         return rpd
     
     
-        
+    """ purpose made """
+    # returns a tuple of two lists respectively
+    # one for keys and second for values
+    # dictt:dict
+    @staticmethod
+    def tup_kvl_dict(dictt):
+        keys = []
+        vals = []
+        for key in dictt.keys():
+            keys.append(key)
+            vals.append(dictt[key])
+        return (keys, vals)
+    
     """ purpose made """
     # month:int -> Month No
-    # returns a dict mapping hotel into a rpd ( reservations per days )
-    def get_reservations_numbers_per_days_model_for_hotels(self, month):
-        hsrpds = {}
+    # returns a dict mapping hotel into a tupled-key-values-dict ( reservations per days )
+    # get reservations per day for all the hotels
+    def get_rnpd_model_for_hotels(self, month):
+        htd = {}
         for hotel in self.hotels:
-            hsrpds[hotel] = self.get_total_reservations(month)
-        return hsrp
+            htd[hotel] = type(self).tup_kvl_dict(self.get_total_reservations(hotel, month))
+        return htd
     
     # month:str -> MONTHs
-    def plot_occupancies(self, month):
-        pass
+    def plot_occupancies(self, month_s):
+        month = get_month_no(month_s) # month:int
+        htd = self.get_rnpd_model_for_hotels(month)
+        """
+            htd contains a dict like below:
+            hotel_1: ([days], [reservation numbers per day])
+        """
+        
+        # initialize result list
+        rl = []
+        
+        print("HTD: ", htd)
+        # Now the ploting part
+        import matplotlib.pyplot
+        plt = matplotlib.pyplot
+        
+        plt.title("Occupancies for month "+month_s)
+        plt.xlabel("Day of month")
+        plt.ylabel("Number of reservations")
+        
+        for h in htd.keys():
+            print()
+            print("Laying plot for data: ")
+            print("XAxis: ", htd[h][0])
+            print("YAxis: ", htd[h][1])
+            print("Label: ", h.name)
+            print()
+            # lay to the plot
+            plt.plot(htd[h][0], htd[h][1], label=h.name)
+            # add to the result list
+            rl.append(htd[h])
+        
+        plt.legend()
+        plt.savefig("hotel_occupancies_"+month_s+".png")
+        
+        return rl
+    
     
     @classmethod
     def load_system(cls):
@@ -307,7 +355,7 @@ if __name__=="__main__":
     else:
         random.seed(1338)
         booking = Booking.load_system()
-        booking.menu()
+        booking.plot_occupancies("Oct")
         # ~ for hotel in booking.hotels:
             # ~ print("Hotel: ", hotel.name)
             # ~ print("\tRooms: ")
