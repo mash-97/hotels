@@ -127,8 +127,8 @@ class Hotel:
             if not room_number in r_dict:
                 r_dict[room_number] = []
             for i in range(1, len(columns)):
-                if len(columns[i])!=0:   # => time lesser / ignore '' for reservations short
-                    r_dict[room_number].append((year, month_s, i, columns[i]))
+                r_dict[room_number].append((year, month_s, i, columns[i]))
+                
         csv_file.close()
         
         return r_dict
@@ -306,35 +306,4 @@ class Hotel:
         parts = [cls.gen_hotel_folder_path(hotel_name), HOTEL_INFO_FILE_NAME]
         return "/".join(parts)
     
-
-
-if __name__=='__main__':
-    dt = 0
-    if dt:
-        import doctest 
-        doctest.testfile("hotel_doctest.tst", verbose=True)
-    else:
-        # ~ name, rooms = Hotel.load_hotel_info_file('hotels/overlook_hotel/hotel_info.txt')
-        # ~ h = Hotel(name, rooms, {})
-        # ~ rsvs = h.load_reservation_strings_for_month('overlook_hotel', 'Oct', 1975)
-        # ~ print(rsvs[237])
-        import time
-        from reservation import Reservation
-        
-        random.seed(137)
-        tt = 0.0
-        attempts = 100
-        for i in range(attempts):
-            Reservation.booking_numbers = []
-            s = time.time()
-            hotel = Hotel.load_hotel('the_great_northern_hotel')
-            e = time.time()
-            print("=====> Loaded time: ", (e-s))
-            print(hotel.name)
-            print("\n\n")
-            tt += (e-s)
-        
-        print("==========> Total time took: ", tt)
-        print("==========> Average time: ", tt/attempts)
-        
 

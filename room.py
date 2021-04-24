@@ -129,12 +129,3 @@ class Room:
   
 
 
-if __name__=='__main__':
-  dt = 1
-  if dt:
-    import doctest
-    doctest.testfile("room_doctest.tst", verbose=True)
-    
-  else:
-    print(get_days_of_the_month(1888, get_month_no("Oct")))
-    

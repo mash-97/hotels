@@ -108,7 +108,3 @@ class Reservation:
     return Reservation(name, room, check_in, check_out, int(booking_number_str))
   
 
-if __name__ == "__main__":
-  import doctest 
-  doctest.testfile("reservation_doctest.tst", verbose=True)
-  

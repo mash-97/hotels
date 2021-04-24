@@ -4,8 +4,6 @@ import matplotlib
 import os
 import hotel as hotel_mod
 
-import time
-
 
 
 # ==============================================================================================
@@ -306,7 +304,6 @@ class Booking:
         # initialize result list
         rl = []
         
-        print("HTD: ", htd)
         # Now the ploting part
         import matplotlib.pyplot
         plt = matplotlib.pyplot
@@ -316,12 +313,6 @@ class Booking:
         plt.ylabel("Number of reservations")
         
         for h in htd.keys():
-            print()
-            print("Laying plot for data: ")
-            print("XAxis: ", htd[h][0])
-            print("YAxis: ", htd[h][1])
-            print("Label: ", h.name)
-            print()
             # lay to the plot
             plt.plot(htd[h][0], htd[h][1], label=h.name)
             # add to the result list
@@ -344,30 +335,5 @@ class Booking:
         return cls(hotels)
 
 
-if __name__=="__main__":
-    dt = 0
-    if dt:
-        import doctest 
-        s = time.time()
-        doctest.testfile("booking_doctest.tst", verbose=True)
-        print("===> ", time.time()-s)
-    
-    else:
-        random.seed(1338)
-        booking = Booking.load_system()
-        booking.plot_occupancies("Oct")
-        # ~ for hotel in booking.hotels:
-            # ~ print("Hotel: ", hotel.name)
-            # ~ print("\tRooms: ")
-            # ~ for i, room in enumerate(hotel.rooms):
-                # ~ print("\t\t{0} {1}".format(i+1, room))
-            # ~ print()
-            # ~ print("\tReservations: ")
-            # ~ for i, bn in enumerate(hotel.reservations):
-                # ~ print("\t\t{0} {1}".format(i+1, hotel.reservations[bn]))
-        print(booking.get_total_reservations(booking.hotels[0], 10))
-        
 
-    
-    
-    
+        
