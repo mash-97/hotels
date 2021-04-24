@@ -62,10 +62,11 @@ class Reservation:
   
   # returns a dict mapping booking_number to the associated reservation
   # tuples in the input supposed to be come from Hotel.load_reservation_strings_for_month
-  @staticmethod
+
   # room (Room::obj)
   # tuples (list of tuples defining tuple(year:int, month:str, short_string:str)
   # short_string that comes from Reservation::obj->to_short_string
+  @staticmethod
   def get_reservations_from_row(room, tuples):
     rvs_dict = {}
 

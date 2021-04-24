@@ -6,6 +6,51 @@ import hotel as hotel_mod
 
 import time
 
+
+
+# ==============================================================================================
+MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+# get month no from month string
+def get_month_no(month_s):
+  for i,ms in enumerate(MONTHS):
+    if ms==month_s:
+      return i+1
+  return None
+
+# get month str from month not
+def get_month_str(month_no):
+  return MONTHS[month_no-1]
+
+# check if the year is a leap year
+def is_leap(year):
+  is_leap_year = False
+  if year%400==0: is_leap_year = True
+  elif year%100==0: is_leap_year = False
+  elif year%4==0: is_leap_year = True
+  return is_leap_year
+
+# get days of the month 
+def get_days_of_the_month(year, month):
+  days = DAYS_PER_MONTH[month-1]
+  # check for leap year and if the month is Feb
+  if is_leap(year) and month==2:
+    days = 29
+  return days
+  
+
+# get days of all the months of the year
+def get_days_of_months(year):
+  days = DAYS_PER_MONTH.copy()
+  if is_leap(year):
+    days[1] = 29
+  return days
+# ==============================================================================================
+
+
+
+
 class Booking:
     def __init__(self, hotels):
         self.hotels = hotels 
@@ -18,7 +63,7 @@ class Booking:
         print("2    Cancel a reservation")
         print("3    Look up a reservation")
         
-        choice = choiceut("> ")
+        choice = input("> ")
         if choice=="1":
             self.create_reservation()
             
@@ -34,14 +79,14 @@ class Booking:
             self.delete_reservations_at_random()
         
     
-    # prompts user to give choiceut on choice to create a reservation
+    # prompts user to give input on choice to create a reservation
     def create_reservation(self):
-        person_name = choiceut("Please enter your name: ")
+        person_name = input("Please enter your name: ")
         
         print("Hi {customer}! Which hotel would you like to book?".format(customer=person_name))
         for index, hotel in enumerate(self.hotels):
             print("{0} {1}".format(index+1, hotel.name))
-        hotel_choice = int(choiceut("> "))
+        hotel_choice = int(input("> "))
         
         hotel = self.hotels[hotel_choice-1]
         room_types = hotel.get_available_room_types()
@@ -50,11 +95,11 @@ class Booking:
         for index, room_type in enumerate(room_types):
             print("{0} {1}".format(index+1, room_type))
         
-        room_type_choice = int(choiceut("> "))
+        room_type_choice = int(input("> "))
         room_type = room_types[room_type_choice-1]
         
-        cid_s = choiceut("Enter check-in date (YYYY-MM-DD): ").split("-")
-        cod_s = choiceut("Enter check-out date (YYYY-MM-DD): ").split("-")
+        cid_s = input("Enter check-in date (YYYY-MM-DD): ").split("-")
+        cod_s = input("Enter check-out date (YYYY-MM-DD): ").split("-")
         
         check_in = datetime.date(int(cid_s[0]), int(cid_s[1]), int(cid_s[2]))
         check_out = datetime.date(int(cod_s[0]), int(cod_s[1]), int(cod_s[2]))
@@ -78,7 +123,7 @@ class Booking:
     
     # prompts user to cancel the reservation
     def cancel_reservation(self):
-        booking_number = int(choiceut("Please enter your booking number: "))
+        booking_number = int(input("Please enter your booking number: "))
         
         hotel = self.find_hotel(booking_number)
         
@@ -90,14 +135,14 @@ class Booking:
             print("Could not find a reservation with that booking number.")
     
     
-    # lookup reservation: prompts user to choiceut booking number 
+    # lookup reservation: prompts user to input booking number 
     # or person name, room reserved, check in date, check out date 
     def lookup_reservation(self):
-        have_bn = choiceut("Do you have your booking number(s)? ")
+        have_bn = input("Do you have your booking number(s)? ")
         if have_bn=="yes":
             bns = []
             while True:
-                bn = choiceut("Please enter a booking number (or 'end'): ")
+                bn = input("Please enter a booking number (or 'end'): ")
                 if bn=="end":
                     break
                 bns.append(int(bn))
@@ -120,11 +165,11 @@ class Booking:
                 print()
         
         elif have_bn=="no":
-            person_name = choiceut("Please enter your name: ")
-            hotel_name = choiceut("Please enter the hotel you are booked at: ")
-            room_number = int(choiceut("Enter the reserved room number: "))
-            cid_s = choiceut("Enter the check-in date (YYYY-MM-DD): ").split("-")
-            cod_s = choiceut("Enter the check-out date (YYYY-MM-DD): ").split("-")
+            person_name = input("Please enter your name: ")
+            hotel_name = input("Please enter the hotel you are booked at: ")
+            room_number = int(input("Enter the reserved room number: "))
+            cid_s = input("Enter the check-in date (YYYY-MM-DD): ").split("-")
+            cod_s = input("Enter the check-out date (YYYY-MM-DD): ").split("-")
             
             check_in = datetime.date(int(cid_s[0]), int(cid_s[1]), int(cid_s[2]))
             check_out = datetime.date(int(cod_s[0]), int(cod_s[1]), int(cod_s[2]))
@@ -192,6 +237,54 @@ class Booking:
         
         hotel.reservations = {}
     
+    
+    """ purpose made """
+    # month:int -> Month No
+    # returns a dict mapping days to total reservations
+    def get_total_reservations(self, hotel, month):
+       
+        days = DAYS_PER_MONTH.copy()
+        days[1] = 29            # ignore if not leap year
+        days = days[month-1]    # assign only days of the 'month'
+        
+        # initialize d_to_rn dict with 0 values
+        rpd = {}
+        for i in range(days):
+            rpd[i] = 0
+        
+        for bn in hotel.reservations.keys():
+            reservation = hotel.reservations[bn]
+            cid = reservation.check_in 
+            cod = reservation.check_out 
+            years = cod.year - cid.year
+            
+            for y in range(years+1):
+                if month==2 and is_leap(cid.year+y):
+                    days = 29
+                elif month==2:
+                    days = 28
+                
+                for d in range(days):
+                    date = datetime.date(cid.year+y, month, d+1)
+                    if cid <= date < cod:
+                        rpd[d] += 1
+        return rpd
+    
+    
+        
+    """ purpose made """
+    # month:int -> Month No
+    # returns a dict mapping hotel into a rpd ( reservations per days )
+    def get_reservations_numbers_per_days_model_for_hotels(self, month):
+        hsrpds = {}
+        for hotel in self.hotels:
+            hsrpds[hotel] = self.get_total_reservations(month)
+        return hsrp
+    
+    # month:str -> MONTHs
+    def plot_occupancies(self, month):
+        pass
+    
     @classmethod
     def load_system(cls):
         hotel_folder_names = os.listdir(hotel_mod.HOTELS_FOLDER_PATH)
@@ -214,9 +307,18 @@ if __name__=="__main__":
     else:
         random.seed(1338)
         booking = Booking.load_system()
-        booking.delete_reservations_at_random()
-        print(len(booking.hotels[1].reservations))
-        print(len(booking.hotels[0].reservations))
+        booking.menu()
+        # ~ for hotel in booking.hotels:
+            # ~ print("Hotel: ", hotel.name)
+            # ~ print("\tRooms: ")
+            # ~ for i, room in enumerate(hotel.rooms):
+                # ~ print("\t\t{0} {1}".format(i+1, room))
+            # ~ print()
+            # ~ print("\tReservations: ")
+            # ~ for i, bn in enumerate(hotel.reservations):
+                # ~ print("\t\t{0} {1}".format(i+1, hotel.reservations[bn]))
+        print(booking.get_total_reservations(booking.hotels[0], 10))
+        
 
     
     

@@ -78,6 +78,7 @@ class Hotel:
         for room in self.rooms:
             # ====================================> skipping rooms logic
             if not room.availability[(year, month_num)]: continue
+            # ====================================> skipping rooms logic
             row = [str(room.room_num)]
             for day in range(1, days+1):
                 date = datetime.date(year, month_num, day)
@@ -109,7 +110,7 @@ class Hotel:
         for ymt in year_month_tuples.keys():
             self.save_reservations_for_month(room_mod.MONTHS[ymt[1]-1], ymt[0])
         
-            
+    
     # returns a dict mapped by room_number to list of tuples of format 
     # (year, month_s, day, reservation:short_format or '')
     @staticmethod

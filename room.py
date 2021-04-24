@@ -1,5 +1,6 @@
 import datetime 
 
+# ==============================================================================================
 MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -37,6 +38,7 @@ def get_days_of_months(year):
   if is_leap(year):
     days[1] = 29
   return days
+# ==============================================================================================
 
 class Room:
   # class attributes
@@ -128,7 +130,11 @@ class Room:
 
 
 if __name__=='__main__':
-  r = Room("Double", 237, 99.99)
-  
-  import doctest
-  doctest.testfile("room_doctest.tst", verbose=True)
+  dt = 1
+  if dt:
+    import doctest
+    doctest.testfile("room_doctest.tst", verbose=True)
+    
+  else:
+    print(get_days_of_the_month(1888, get_month_no("Oct")))
+    
