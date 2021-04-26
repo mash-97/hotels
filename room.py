@@ -5,37 +5,37 @@ MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 
 DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 # get month no from month string
-def get_month_no(month_s):
+def helper_get_month_no(month_s):
   for i,ms in enumerate(MONTHS):
     if ms==month_s:
       return i+1
   return None
 
 # get month str from month not
-def get_month_str(month_no):
+def helper_get_month_str(month_no):
   return MONTHS[month_no-1]
 
 # check if the year is a leap year
-def is_leap(year):
-  is_leap_year = False
-  if year%400==0: is_leap_year = True
-  elif year%100==0: is_leap_year = False
-  elif year%4==0: is_leap_year = True
-  return is_leap_year
+def helper_is_leap(year):
+  helper_is_leap_year = False
+  if year%400==0: helper_is_leap_year = True
+  elif year%100==0: helper_is_leap_year = False
+  elif year%4==0: helper_is_leap_year = True
+  return helper_is_leap_year
 
 # get days of the month 
-def get_days_of_the_month(year, month):
+def helper_get_days_of_the_month(year, month):
   days = DAYS_PER_MONTH[month-1]
   # check for leap year and if the month is Feb
-  if is_leap(year) and month==2:
+  if helper_is_leap(year) and month==2:
     days = 29
   return days
   
 
 # get days of all the months of the year
-def get_days_of_months(year):
+def helper_get_days_of_months(year):
   days = DAYS_PER_MONTH.copy()
-  if is_leap(year):
+  if helper_is_leap(year):
     days[1] = 29
   return days
 # ==============================================================================================
@@ -59,14 +59,14 @@ class Room:
     self.availability = {}
   
   def __str__(self):
-    return "Room {0},{1},{2}".format(self.room_num, self.room_type, self.price)
+    return "Room %s,%s,%s"%(self.room_num, self.room_type, self.price)
 
   # months_l (list of str defining months)
   # year (int)
   def set_up_room_availability(self, months_l, year):
     for month_s in months_l:
-      month = get_month_no(month_s)
-      days = get_days_of_the_month(year, month)
+      month = helper_get_month_no(month_s)
+      days = helper_get_days_of_the_month(year, month)
       self.availability[(year, month)] = [None]+[True for i in range(days)]
     
   
@@ -96,24 +96,8 @@ class Room:
       if not available: return False
     return True
 
-  """ purpose made """
-  # check_in (date), check_out (date)
-  def reserve_room_for(self, check_in, check_out):
-    diff_td = check_out - check_in
-    
-    for td in range(0, diff_td.days):
-      tmp_date = check_in + datetime.timedelta(td)
-      self.reserve_room(tmp_date)
-  
-  """ purpose made """
-  # check_in (date), check_out (date)
-  def make_available_for(self, check_in, check_out):
-    diff_td = check_out - check_in
-    
-    for td in range(0, diff_td.days):
-      tmp_date = check_in + datetime.timedelta(td)
-      self.make_available(tmp_date)
-  
+
+
   @staticmethod
   # rooms (Room objects)
   # room_type (str)
@@ -128,4 +112,8 @@ class Room:
     return None
   
 
+
+# ~ if __name__=="__main__":
+    # ~ import doctest
+    # ~ doctest.testfile("room_doctest.tst", verbose=True)
 
