@@ -90,9 +90,9 @@ class Booking:
     def create_reservation(self):
         person_name = input("Please enter your name: ")
         
-        print("Hi {customer}! Which hotel would you like to book?".format(customer=person_name))
+        print("Hi %s! Which hotel would you like to book?"%(person_name))
         for index, hotel in enumerate(self.hotels):
-            print("{0} {1}".format(index+1, hotel.name))
+            print("%s %s"%(index+1, hotel.name))
         hotel_choice = int(input("> "))
         
         hotel = self.hotels[hotel_choice-1]
@@ -100,7 +100,7 @@ class Booking:
         
         print("Which type of room would you like?")
         for index, room_type in enumerate(room_types):
-            print("{0} {1}".format(index+1, room_type))
+            print("%s %s"%(index+1, room_type))
         
         room_type_choice = int(input("> "))
         room_type = room_types[room_type_choice-1]
